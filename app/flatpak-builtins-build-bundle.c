@@ -475,6 +475,8 @@ build_oci (OstreeRepo *repo, const char *collection_id, GFile *dir,
   g_autoptr(FlatpakOciIndex) index = NULL;
   g_autoptr(GHashTable) flatpak_annotations = NULL;
   g_auto(GStrv) ref_parts = NULL;
+  int history_index;
+  GTimeVal tv;
 
   if (!flatpak_repo_resolve_rev (repo, collection_id, NULL, ref, FALSE,
                                  &commit_checksum, cancellable, error))
@@ -522,6 +524,11 @@ build_oci (OstreeRepo *repo, const char *collection_id, GFile *dir,
   image = flatpak_oci_image_new ();
   flatpak_oci_image_set_layer (image, uncompressed_digest);
   flatpak_oci_image_set_architecture (image, flatpak_arch_to_oci_arch (ref_parts[2]));
+  history_index = flatpak_oci_image_add_history (image);
+
+  g_get_current_time (&tv);
+  image->history[history_index]->created = g_time_val_to_iso8601 (&tv);
+  image->history[history_index]->created_by = g_strdup ("flatpak build-bundle");
 
   flatpak_oci_copy_annotations (flatpak_annotations,
                                 flatpak_oci_image_get_labels (image));
