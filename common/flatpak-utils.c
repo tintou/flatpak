@@ -975,7 +975,6 @@ static gboolean
 is_valid_initial_branch_character (gint c)
 {
   return
-    (c >= '0' && c <= '9') ||
     (c >= 'A' && c <= 'Z') ||
     (c >= 'a' && c <= 'z') ||
     (c == '_') ||
@@ -987,6 +986,7 @@ is_valid_branch_character (gint c)
 {
   return
     is_valid_initial_branch_character (c) ||
+    (c >= '0' && c <= '9') ||
     (c == '.');
 }
 
@@ -999,7 +999,7 @@ is_valid_branch_character (gint c)
  *
  * Branch names must only contain the ASCII characters
  * "[A-Z][a-z][0-9]_-.".
- * Branch names may not begin with a digit.
+ * Branch names may not begin with a digit or a period.
  * Branch names must contain at least one character.
  *
  * Returns: %TRUE if valid, %FALSE otherwise.
